@@ -27,16 +27,15 @@ defaults <- subset(loans, LoanStatus == 'Defaulted')
 completed <- subset(loans, LoanStatus == 'Completed')
 ```
 The first things I am going to look at are credit grade and employment status. I expect that loans that default will have a lower credit grade and/or a more precarious employment status.
-```{r}
-ggplot(aes(x = CreditGrade), data = loans) +
-  geom_bar() +
-  facet_wrap(~LoanStatus)
 
-ggplot(aes(x = EmploymentStatus), data = loans) +
-  geom_bar() +
-  facet_wrap(~LoanStatus)
-```
 By reading the documentation it is clear that loans post-January 2009 have a Prosper Rating while those before have a credit grade. Therefore I am going to combine them into one varable called 'Rating'.
 ```{r}
 loans$Rating <- paste(loans$CreditGrade, loans$ProsperRating..Alpha.)
+```
+Now let's look.
+```{r}
+ggplot(aes(x = Rating), data = defaults) +
+  geom_bar() +
+  facet_wrap(~LoanStatus)
+
 ```
