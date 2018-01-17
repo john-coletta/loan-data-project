@@ -26,3 +26,8 @@ I feel that the most interesting investigation into this data would be attemptin
 defaults <- subset(loans, LoanStatus == 'Defaulted')
 completed <- subset(loans, LoanStatus == 'Completed')
 ```
+The first things I am going to look at are credit grade and employment status. I expect that loans that default will have a lower credit grade and/or a more precarious employment status.
+```{r}
+ggplot(aes(x = CreditGrade), data = defaults) +
+  geom_bar()
+```
