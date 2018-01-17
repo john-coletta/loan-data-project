@@ -6,3 +6,13 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+```{r}
+#Load in the data
+loans <- read.csv('prosperLoanData.csv')
+library(ggplot2)
+library(dplyr)
+
+```
+## Exploring the data
+
+Here we will explore the data and choose some variables to examine in further depth.
