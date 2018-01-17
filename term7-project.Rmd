@@ -35,7 +35,12 @@ loans$Rating <- paste(loans$CreditGrade, loans$ProsperRating..Alpha.)
 Now let's look.
 ```{r}
 ggplot(aes(x = Rating), data = defaults) +
-  geom_bar() +
-  facet_wrap(~LoanStatus)
+  geom_bar()
 
+ggsave('defaultrating.png')
+
+ggplot(aes(x = Rating), data = completed) +
+  geom_bar()
+
+ggsave('completedrating.png')
 ```
