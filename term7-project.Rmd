@@ -37,10 +37,21 @@ Now let's look.
 ggplot(aes(x = Rating), data = defaults) +
   geom_bar()
 
-ggsave('defaultrating.png')
-
+ggsave('completedemployment.png')
+```
+```{r}
 ggplot(aes(x = Rating), data = completed) +
   geom_bar()
 
-ggsave('completedrating.png')
 ```
+We notice something interesting from these graphs. As expected, the defaulted loans have ratings toward the lower end. However, the completed loans don't seem to favor one rating vs. another. Now let's look at employment status.
+```{r}
+ggplot(aes(x = EmploymentStatus), data = defaults) +
+  geom_bar()
+
+```
+```{r}
+ggplot(aes(x = EmploymentStatus), data = completed) +
+  geom_bar()
+```
+
