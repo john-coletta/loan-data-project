@@ -37,7 +37,7 @@ Now let's look.
 ggplot(aes(x = Rating), data = defaults) +
   geom_bar()
 
-ggsave('completedemployment.png')
+ggsave('completecreditscore.png')
 ```
 ```{r}
 ggplot(aes(x = Rating), data = completed) +
@@ -61,4 +61,12 @@ loans$CreditScoreAvg <- (loans$CreditScoreRangeLower + loans$CreditScoreRangeUpp
 
 defaults <- subset(loans, LoanStatus == 'Defaulted')
 completed <- subset(loans, LoanStatus == 'Completed')
+
+ggplot(aes(x = CreditScoreAvg), data = defaults) +
+  geom_histogram(binwidth = 19)
 ```
+```{r}
+ggplot(aes(x = CreditScoreAvg), data = completed) +
+  geom_histogram(binwidth = 19)
+```
+
