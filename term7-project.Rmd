@@ -16,3 +16,13 @@ library(dplyr)
 ## Exploring the data
 
 Here we will explore the data and choose some variables to examine in further depth.
+```{r}
+colnames(loans)
+
+table(loans$LoanStatus)
+```
+I feel that the most interesting investigation into this data would be attempting to predict whether or not a loan defaults. This is obviously a tough thing, so I will first begin by examining the characteristics of defaulted loans versus completed ones.
+```{r}
+defaults <- subset(loans, LoanStatus == 'Defaulted')
+completed <- subset(loans, LoanStatus == 'Completed')
+```
