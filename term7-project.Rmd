@@ -54,4 +54,11 @@ ggplot(aes(x = EmploymentStatus), data = defaults) +
 ggplot(aes(x = EmploymentStatus), data = completed) +
   geom_bar()
 ```
+We can see from the above that there isn't too much a difference in employment status, though the defaults seem to have more 'not available' than the completed. Now let's look at some quantitative variables, namely, credit score of the borrower. We will first average the upper and lower credit scores.
+```{r}
+#Don't forget to add this to the subsets too
+loans$CreditScoreAvg <- (loans$CreditScoreRangeLower + loans$CreditScoreRangeUpper) / 2
 
+defaults <- subset(loans, LoanStatus == 'Defaulted')
+completed <- subset(loans, LoanStatus == 'Completed')
+```
