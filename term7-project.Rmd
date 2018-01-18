@@ -184,4 +184,22 @@ median(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)
 ```
 So we can see that defaults have both a higher mean and median bank card utilization percentage than completed loans.
 
-Now we have a list of variables that may be useful in our model: the loan rating, the borrower's credit score, stated monthly income, debt-to-income ratio, open lines of credit, and bank card utilization percentage. Some variables that didn't appear as useful were: employment status and verifiable income, mostly due to less complete data.
+Now we have a list of variables that may be useful in our model: the loan rating, the borrower's credit score, stated monthly income, debt-to-income ratio, open lines of credit, and bank card utilization percentage. Some variables that didn't appear as useful were: employment status and verifiable income.
+
+## Analysis
+
+I am going to create new data sets that contain only the variables I care about, so that they are easier to work with.
+```{r}
+wantedcols <- c('LoanStatus', 'Rating', 'CreditScoreAvg',
+                'OpenCreditLines', 'BankcardUtilization',
+                'DebtToIncomeRatio', 'StatedMonthlyIncome',
+                'BorrowerAPR')
+
+mod_loans <- loans[wantedcols]
+mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
+                                LoanStatus == 'Defaulted')
+```
+Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed.
+```{r}
+mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
+```
