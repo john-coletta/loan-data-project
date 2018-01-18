@@ -152,4 +152,13 @@ mean(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
 
 mean(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
 ```
-So it seems that the defaulted loans has a longer tail than the completed lonas, and therefore the mean number of open credit lines is further away from the median than for the completed loans.
+So it seems that the defaulted loans has a longer tail than the completed lonas, and therefore the mean number of open credit lines is further away from the median than for the completed loans. Now let's look at the verified income.
+```{r}
+ggplot(aes(x = IncomeVerifiable), data = defaults) +
+  geom_bar()
+```
+```{r}
+ggplot(aes(x = IncomeVerifiable), data = completed) +
+  geom_bar()
+```
+Interestingly, there doesn't seem to be too much of a difference between defaults and completed loans when it comes to whether or not they have verified income. Finally, we will look at bank card utilization, or, how much the borrower used their credit card.
