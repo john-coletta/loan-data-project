@@ -108,3 +108,27 @@ median(subset(defaults, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)
 
 median(subset(completed, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)
 ```
+We can see that, once again, the completed loans have a lower debt-to-income ratio than the defaulted loans, this too makes sense.
+
+## Recap so Far
+
+We have found a few interesting things that can help our model. First, defaulted loans tend to have lower ratings than completed loans. Second, the employment status of the borrower doesn't seem to matter as much, though defaulted loans had higher instances of 'not available'. Third, the mean credit scores and median monthly income of defaulted loans is less than completed loans. Finally, the median debt-to-income ratio is higher for defaulted loans.
+
+We are going to look at a few more variables. First, the APR of the loan. Second, the number of open credit lines. Third, whether or not the borrower provided verifiable documentation of income. And fourth, the bank card utilization of the borrower.
+```{r}
+ggplot(aes(x = BorrowerAPR), data = defaults) +
+  geom_histogram(binwidth = .01) +
+  scale_x_continuous(breaks = seq(0, .5, .05))
+```
+```{r}
+ggplot(aes(x = BorrowerAPR), data = completed) +
+  geom_histogram(binwidth = .01) +
+  scale_x_continuous(breaks = seq(0, .5, .05))
+```
+Let's take a look at the median now.
+```{r}
+median(subset(defaults, !is.na(BorrowerAPR))$BorrowerAPR)
+
+median(subset(completed, !is.na(BorrowerAPR))$BorrowerAPR)
+```
+We see here that the defaulted loans tend to have a higher APR than the completed loans.
