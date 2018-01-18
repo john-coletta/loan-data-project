@@ -162,3 +162,26 @@ ggplot(aes(x = IncomeVerifiable), data = completed) +
   geom_bar()
 ```
 Interestingly, there doesn't seem to be too much of a difference between defaults and completed loans when it comes to whether or not they have verified income. Finally, we will look at bank card utilization, or, how much the borrower used their credit card.
+```{r}
+ggplot(aes(x = BankcardUtilization), data = defaults) +
+  geom_histogram(binwidth = 0.05) +
+  scale_x_continuous(breaks = seq(0, 2, 0.1), limits = c(0, 2))
+```
+```{r}
+ggplot(aes(x = BankcardUtilization), data = completed) +
+  geom_histogram(binwidth = 0.05) +
+  scale_x_continuous(breaks = seq(0, 2, 0.1), limits = c(0, 2))
+```
+We can see that for defaulted loans, they appear to use a higher percentage of their available bank card credit. Let's look at medians and means now.
+```{r}
+mean(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)
+
+mean(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)
+
+median(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)
+
+median(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)
+```
+So we can see that defaults have both a higher mean and median bank card utilization percentage than completed loans.
+
+Now we have a list of variables that may be useful in our model: the loan rating, the borrower's credit score, stated monthly income, debt-to-income ratio, open lines of credit, and bank card utilization percentage. Some variables that didn't appear as useful were: employment status and verifiable income, mostly due to less complete data.
