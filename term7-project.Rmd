@@ -216,5 +216,11 @@ mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
 ```
 Because the result of a loan is a binary choice, I am going to attempt to use logarithmic regression to create a model that will give the percent chance a loan will default. To do this I will first convert the loan rating into a numeric scale, one that mirrors Prosper's own numeric rankings.
 ```{r}
-mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7, 0)
+mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
+                            ifelse(mod_loans$Rating == 'A', 6,
+                            ifelse(mod_loans$Rating == 'B', 5,
+                            ifelse(mod_loans$Rating == 'C', 4,
+                            ifelse(mod_loans$Rating == 'D', 3,
+                            ifelse(mod_loans$Rating == 'E', 2,
+                            ifelse(mod_loans$Rating == 'HR',1,                                        0)))))))
 ```
