@@ -131,4 +131,25 @@ median(subset(defaults, !is.na(BorrowerAPR))$BorrowerAPR)
 
 median(subset(completed, !is.na(BorrowerAPR))$BorrowerAPR)
 ```
-We see here that the defaulted loans tend to have a higher APR than the completed loans.
+We see here that the defaulted loans tend to have a higher APR than the completed loans. Let's look through the other variables.
+```{r}
+ggplot(aes(x = OpenCreditLines), data = defaults) +
+  geom_histogram(binwidth = 1)
+```
+```{r}
+ggplot(aes(x = OpenCreditLines), data = completed) +
+  geom_histogram(binwidth = 1)
+```
+And again, the medians.
+```{r}
+median(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
+
+median(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
+```
+Here, interestingly, the medians are equal. Let's see what the means tell us.
+```{r}
+mean(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
+
+mean(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
+```
+So it seems that the defaulted loans has a longer tail than the completed lonas, and therefore the mean number of open credit lines is further away from the median than for the completed loans.
