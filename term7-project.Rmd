@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
 #Load in the data
-loans <- read.csv('prosperLoanData.csv')
+loans <- read.csv('prosperLoanData.csv', na.strings = '')
 library(ggplot2)
 library(dplyr)
 
@@ -20,6 +20,11 @@ Here we will explore the data and choose some variables to examine in further de
 colnames(loans)
 
 table(loans$LoanStatus)
+
+table(loans$CreditGrade)
+#Here I find that many of the credit grade (and prosper equivalent)
+#Ratings are "". I want to combine them to get rid of this. I will
+#do this in a little bit.
 ```
 I feel that the most interesting investigation into this data would be attempting to predict whether or not a loan defaults. This is obviously a tough thing, so I will first begin by examining the characteristics of defaulted loans versus completed ones.
 ```{r}
@@ -30,7 +35,12 @@ The first things I am going to look at are credit grade and employment status. I
 
 By reading the documentation it is clear that loans post-January 2009 have a Prosper Rating while those before have a credit grade. Therefore I am going to combine them into one varable called 'Rating'.
 ```{r}
-loans$Rating <- paste(loans$CreditGrade, loans$ProsperRating..Alpha.)
+loans$Rating <- ifelse(is.na(loans$CreditGrade),
+                       as.character(loans$ProsperRating..Alpha.),
+                       as.character(loans$CreditGrade))
+
+loans$Rating = factor(loans$Rating, 
+                      c('AA', 'A', 'B', 'C', 'D', 'E', 'HR', 'NC'))
 ```
 Now let's look.
 ```{r}
