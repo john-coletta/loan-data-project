@@ -27,10 +27,7 @@ table(loans$CreditGrade)
 #do this in a little bit.
 ```
 I feel that the most interesting investigation into this data would be attempting to predict whether or not a loan defaults. This is obviously a tough thing, so I will first begin by examining the characteristics of defaulted loans versus completed ones.
-```{r}
-defaults <- subset(loans, LoanStatus == 'Defaulted')
-completed <- subset(loans, LoanStatus == 'Completed')
-```
+
 The first things I am going to look at are credit grade and employment status. I expect that loans that default will have a lower credit grade and/or a more precarious employment status.
 
 By reading the documentation it is clear that loans post-January 2009 have a Prosper Rating while those before have a credit grade. Therefore I am going to combine them into one varable called 'Rating'.
@@ -42,12 +39,16 @@ loans$Rating <- ifelse(is.na(loans$CreditGrade),
 loans$Rating = factor(loans$Rating, 
                       c('AA', 'A', 'B', 'C', 'D', 'E', 'HR', 'NC'))
 ```
+Now lets subset our data.
+```{r}
+defaults <- subset(loans, LoanStatus == 'Defaulted')
+completed <- subset(loans, LoanStatus == 'Completed')
+```
+
 Now let's look.
 ```{r}
 ggplot(aes(x = Rating), data = defaults) +
   geom_bar()
-
-ggsave('completecreditscore.png')
 ```
 ```{r}
 ggplot(aes(x = Rating), data = completed) +
@@ -206,14 +207,9 @@ wantedcols <- c('LoanStatus', 'Rating', 'CreditScoreAvg',
                 'BorrowerAPR')
 
 mod_loans <- loans[wantedcols]
-mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
-                                LoanStatus == 'Defaulted')
-```
-Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed.
-```{r}
-mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
 
 ```
+
 Because the result of a loan is a binary choice, I am going to attempt to use logarithmic regression to create a model that will give the percent chance a loan will default. To do this I will first convert the loan rating into a numeric scale, one that mirrors Prosper's own numeric rankings.
 ```{r}
 mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
@@ -223,4 +219,12 @@ mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
                             ifelse(mod_loans$Rating == 'D', 3,
                             ifelse(mod_loans$Rating == 'E', 2,
                             ifelse(mod_loans$Rating == 'HR',1,                                        0)))))))
+
+mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
+                                LoanStatus == 'Defaulted')
+```
+Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed.
+```{r}
+mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
+
 ```
