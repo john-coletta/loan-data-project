@@ -235,3 +235,9 @@ test <- mod_results[splits,]
 
 train <- mod_results[-splits,]
 ```
+Now to create the model.
+```{r}
+model <- glm(result~., family=binomial(link='logit'), data = train)
+
+summary(model)
+```
