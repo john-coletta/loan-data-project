@@ -209,7 +209,6 @@ wantedcols <- c('LoanStatus', 'Rating', 'CreditScoreAvg',
 mod_loans <- loans[wantedcols]
 
 ```
-
 Because the result of a loan is a binary choice, I am going to attempt to use logarithmic regression to create a model that will give the percent chance a loan will default. To do this I will first convert the loan rating into a numeric scale, one that mirrors Prosper's own numeric rankings.
 ```{r}
 mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
@@ -219,22 +218,32 @@ mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
                             ifelse(mod_loans$Rating == 'D', 3,
                             ifelse(mod_loans$Rating == 'E', 2,
                             ifelse(mod_loans$Rating == 'HR',1,                                        0)))))))
+```
+Since the alphabetical rankings are now redundant, I will drop that column. I will also create a subset that only has the defaulted and completed lonas.
+```{r}
+mod_loans <- subset(mod_loans, select = -Rating)
 
 mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
                                 LoanStatus == 'Defaulted')
 ```
-Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed.
+
+Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed. Then I will drop the loan status column.
 ```{r}
 mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
+
+mod_results <- subset(mod_results, select = -LoanStatus)
 ```
 The next step is to split our data into testing and training subsets. I want an 80/20 train/test split.
 ```{r}
 splits <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
+```
 
+```{r}
 test <- mod_results[splits,]
 
 train <- mod_results[-splits,]
 ```
+
 Now to create the model.
 ```{r}
 model <- glm(result~., family=binomial(link='logit'), data = train)
