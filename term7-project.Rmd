@@ -226,5 +226,12 @@ mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
 Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed.
 ```{r}
 mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
+```
+The next step is to split our data into testing and training subsets. I want an 80/20 train/test split.
+```{r}
+splits <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
 
+test <- mod_results[splits,]
+
+train <- mod_results[-splits,]
 ```
