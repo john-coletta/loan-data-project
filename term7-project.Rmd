@@ -382,5 +382,10 @@ With this decision boundry, we have created a model with decent precision but lo
 
 To wrap up I will examine the relationship between a couple of the variables, to help explore why the model was not excellent. First I will look at the relationship between credit score and loan rating, and then between monthly income, APR, debt to income ration, and loan rating.
 ```{r}
+ggplot(aes(y = CreditScoreAvg, x = Rating), data = loans) +
+  geom_jitter(alpha = 1/100)
+```
+We see here that, as expected, the average credit score decreases as the loan rating decreases.
+```{r}
 
 ```
