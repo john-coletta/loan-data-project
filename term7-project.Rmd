@@ -226,19 +226,34 @@ mod_loans <- subset(mod_loans, select = -Rating)
 mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
                                 LoanStatus == 'Defaulted')
 ```
-
 Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed. Then I will drop the loan status column.
 ```{r}
 mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
 
 mod_results <- subset(mod_results, select = -LoanStatus)
 ```
+There are some NA values in the data. I will replace these with the mean or, for long-tailed data, the median.
+```{r}
+mod_results$CreditScoreAvg[is.na(mod_results$CreditScoreAvg)] <- mean(mod_results$CreditScoreAvg, na.rm=TRUE)
+
+mod_results$OpenCreditLines[is.na(mod_results$OpenCreditLines)] <- mean(mod_results$OpenCreditLines, na.rm=TRUE)
+
+mod_results$BankcardUtilization[is.na(mod_results$BankcardUtilization)] <- median(mod_results$BankcardUtilization, na.rm=TRUE)
+
+mod_results$DebtToIncomeRatio[is.na(mod_results$DebtToIncomeRatio)] <- median(mod_results$DebtToIncomeRatio, na.rm=TRUE)
+
+mod_results$StatedMonthlyIncome[is.na(mod_results$StatedMonthlyIncome)] <- median(mod_results$StatedMonthlyIncome, na.rm=TRUE)
+
+mod_results$BorrowerAPR[is.na(mod_results$BorrowerAPR)] <- mean(mod_results$BorrowerAPR, na.rm=TRUE)
+```
+Finally, I will drop any rows that have an NA value for the numeric rating. This is because this is essentially a categorical variable, and taking the mean or median doesn't make sense.
+```{r}
+mod_results <- mod_results[complete.cases(mod_results[ , 7]),]
+```
 The next step is to split our data into testing and training subsets. I want an 80/20 train/test split.
 ```{r}
 splits <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
-```
 
-```{r}
 test <- mod_results[splits,]
 
 train <- mod_results[-splits,]
@@ -249,4 +264,16 @@ Now to create the model.
 model <- glm(result~., family=binomial(link='logit'), data = train)
 
 summary(model)
+```
+Now we have our model. From the looks of it, the only variable that appears not significant is Bank Card Utilization. To see how well our model actually does, let us run it on the test data. I am using a 0.5 decision boundry. That is, if the model predicts a 50% probability of success (completed loan), it will be set to that.
+```{r}
+test.results <- predict(model, 
+                        newdata=subset(test, select = c(1:7)),
+                        type = 'response')
+
+test.results <- ifelse(test.results > 0.5, 1.0, 0)
+
+accuracy.error <- mean(test.results != test$result)
+
+print(paste('Accuracy', 1-accuracy.error))
 ```
