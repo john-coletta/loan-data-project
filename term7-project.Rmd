@@ -289,3 +289,43 @@ recall <- sum(test.results == test$result
 print(paste('Precision', precision))
 print(paste('Recall', recall))
 ```
+From the above we can see two things. First, that 60% of cases where our model predicts a default, a default actually occured. Second, of the total defaults, our model only predicted just over 1% of them. It clearly needs some tweaking.
+
+## Tweaking the Model
+
+First I am going to remove Bank Card Utilization from the model, as it has a very high p-value. Then I am going to tweak our decision threshold. Currently it sits at 50%, but if there is a 50/50 chance of a loan defaulting, would a bank want to give out that loan? Probably not. I will therefore increase it to a 75% threshold.
+```{r}
+mod_results <- subset(mod_results, select = -BankcardUtilization)
+
+splits <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
+
+test <- mod_results[splits,]
+
+train <- mod_results[-splits,]
+
+model <- glm(result~., family=binomial(link='logit'), data = train)
+
+summary(model)
+
+test.results <- predict(model, 
+                        newdata=subset(test, select = c(1:6)),
+                        type = 'response')
+
+test.results <- ifelse(test.results > 0.75, 1.0, 0)
+
+accuracy.error2 <- mean(test.results != test$result)
+
+print(paste('Accuracy (new model)', 1-accuracy.error))
+```
+The accuracy is very similar to the previous model. Let us look at precision and recall again.
+```{r}
+precision2 <- sum(test.results == test$result
+                 & test$result == 0)/sum(test.results == 0)
+
+recall2 <- sum(test.results == test$result
+              & test$result == 0)/sum(test$result == 0)
+
+print(paste('Precision (new model)', precision2))
+print(paste('Recall (new model)', recall2))
+```
+Now we have captured a lot more of the defaults. Of the total defaults, our model was correct 24% of the time. Additionally, 40% of the defaults it predicted were in fact defaults.
