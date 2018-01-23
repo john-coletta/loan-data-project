@@ -356,7 +356,7 @@ print(paste('Precision (new model)', precision2))
 print(paste('Recall (new model)', recall2))
 ```
 
-Now we have captured a lot more of the defaults. Of the total defaults, our model predicted default 24% of the time. Additionally, 40% of the defaults it predicted were in fact defaults. Let's test one final thing. We will create a model based soley off the credit score and the rating given to the loan.
+Now we have captured a lot more of the defaults. Of the total defaults, our model predicted default 25ish% of the time. Additionally, 40% of the defaults it predicted were in fact defaults. Let's test one final thing. We will create a model based soley off the credit score and the rating given to the loan.
 ```{r}
 model3 <- glm(result~., family=binomial(link='logit'), data = subset(train2, select = c(1, 6, 7)))
 
@@ -407,7 +407,7 @@ print(paste('Precision (new model)', precision4))
 print(paste('Recall (new model)', recall4))
 ```
 
-With this decision boundry, we have created a model with decent precision but low accuracy. 45% of the time it predicts a default, one occurs, and it captures 16% of the total defaults. It is not a great model, but could be a useful tool, when used alongside other metrics, to determine the quality of a loan.
+With this decision boundry, we have created a model with decent precision but low accuracy. 47ish% of the time it predicts a default, one occurs, and it captures 17% of the total defaults. It is not a great model, but could be a useful tool, when used alongside other metrics, to determine the quality of a loan.
 
 ## Wrapping Up (Final Plots and Summary)
 
