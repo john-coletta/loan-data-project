@@ -355,4 +355,32 @@ recall3 <- sum(test.results3 == test$result
 print(paste('Precision (new model)', precision3))
 print(paste('Recall (new model)', recall3))
 ```
-We lost a little recall with out simplified model, but not much.
+We lost a little recall with out simplified model, but not much. Finally, let us set the decision boundry to 70%.
+```{r}
+test.results4 <- predict(model3, 
+                        newdata=subset(test, select = c(1, 6)),
+                        type = 'response')
+
+test.results4 <- ifelse(test.results4 > 0.7, 1.0, 0)
+
+accuracy.error4 <- mean(test.results4 != test$result)
+
+print(paste('Accuracy (new model)', 1-accuracy.error4))
+
+precision4 <- sum(test.results4 == test$result
+                 & test$result == 0)/sum(test.results4 == 0)
+
+recall4 <- sum(test.results4 == test$result
+              & test$result == 0)/sum(test$result == 0)
+
+print(paste('Precision (new model)', precision4))
+print(paste('Recall (new model)', recall4))
+```
+With this decision boundry, we have created a model with decent precision but low accuracy. 45% of the time it predicts a default, one occurs, and it captures 16% of the total defaults. It is not a great model, but could be a useful tool, when used alongside other metrics, to determine the quality of a loan.
+
+## Wrapping Up
+
+To wrap up I will examine the relationship between a couple of the variables, to help explore why the model was not excellent. First I will look at the relationship between credit score and loan rating, and then between monthly income, APR, debt to income ration, and loan rating.
+```{r}
+
+```
