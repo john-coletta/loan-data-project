@@ -26,6 +26,7 @@ table(loans$CreditGrade)
 #Ratings are "". I want to combine them to get rid of this. I will
 #do this in a little bit.
 ```
+
 I feel that the most interesting investigation into this data would be attempting to predict whether or not a loan defaults. This is obviously a tough thing, so I will first begin by examining the characteristics of defaulted loans versus completed ones.
 
 The first things I am going to look at are credit grade and employment status. I expect that loans that default will have a lower credit grade and/or a more precarious employment status.
@@ -39,6 +40,7 @@ loans$Rating <- ifelse(is.na(loans$CreditGrade),
 loans$Rating = factor(loans$Rating, 
                       c('AA', 'A', 'B', 'C', 'D', 'E', 'HR', 'NC'))
 ```
+
 Now lets subset our data.
 ```{r}
 defaults <- subset(loans, LoanStatus == 'Defaulted')
@@ -55,6 +57,7 @@ ggplot(aes(x = Rating), data = completed) +
   geom_bar()
 
 ```
+
 We notice something interesting from these graphs. As expected, the defaulted loans have ratings toward the lower end. However, the completed loans don't seem to favor one rating vs. another. Now let's look at employment status.
 ```{r}
 ggplot(aes(x = EmploymentStatus), data = defaults) +
@@ -65,6 +68,7 @@ ggplot(aes(x = EmploymentStatus), data = defaults) +
 ggplot(aes(x = EmploymentStatus), data = completed) +
   geom_bar()
 ```
+
 We can see from the above that there isn't too much a difference in employment status, though the defaults seem to have more 'not available' than the completed. Now let's look at some quantitative variables, namely, credit score of the borrower. We will first average the upper and lower credit scores.
 ```{r}
 #Don't forget to add this to the subsets too
@@ -85,7 +89,8 @@ mean(subset(defaults, !is.na(CreditScoreAvg))$CreditScoreAvg)
 
 mean(subset(completed, !is.na(CreditScoreAvg))$CreditScoreAvg)
 ```
-So we can see from above that the defaults have a lower mean credit score than the completed, which is what we would expect. Now let's look at month income.
+
+So we can see from above that the defaults have a lower mean credit score than the completed, which is what we would expect. Now let's look at monthly income.
 ```{r}
 ggplot(aes(x = StatedMonthlyIncome), data = defaults) +
   geom_histogram() +
@@ -96,12 +101,14 @@ ggplot(aes(x = StatedMonthlyIncome), data = completed) +
   geom_histogram() +
   scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000))
 ```
+
 Because these are both very long-tailed distributions, let's look at the median.
 ```{r}
 median(subset(defaults, !is.na(StatedMonthlyIncome))$StatedMonthlyIncome)
 
 median(subset(completed, !is.na(StatedMonthlyIncome))$StatedMonthlyIncome)
 ```
+
 Again, we see that the median monthly income for the completed loans is higher than that of the defaults. Soon we can start building a model to try and predict the probability a loan will default. Next let us look at debt to income ratio.
 ```{r}
 ggplot(aes(x = DebtToIncomeRatio), data = defaults) +
@@ -113,12 +120,14 @@ ggplot(aes(x = DebtToIncomeRatio), data = completed) +
   geom_histogram() +
   scale_x_continuous(breaks = seq(0, 1, .1), limits = c(0, 1))
 ```
+
 Again, since they are long-tailed, let's look at the median.
 ```{r}
 median(subset(defaults, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)
 
 median(subset(completed, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)
 ```
+
 We can see that, once again, the completed loans have a lower debt-to-income ratio than the defaulted loans, this too makes sense.
 
 ## Recap so Far
@@ -136,12 +145,14 @@ ggplot(aes(x = BorrowerAPR), data = completed) +
   geom_histogram(binwidth = .01) +
   scale_x_continuous(breaks = seq(0, .5, .05))
 ```
+
 Let's take a look at the median now.
 ```{r}
 median(subset(defaults, !is.na(BorrowerAPR))$BorrowerAPR)
 
 median(subset(completed, !is.na(BorrowerAPR))$BorrowerAPR)
 ```
+
 We see here that the defaulted loans tend to have a higher APR than the completed loans. Let's look through the other variables.
 ```{r}
 ggplot(aes(x = OpenCreditLines), data = defaults) +
@@ -151,18 +162,21 @@ ggplot(aes(x = OpenCreditLines), data = defaults) +
 ggplot(aes(x = OpenCreditLines), data = completed) +
   geom_histogram(binwidth = 1)
 ```
+
 And again, the medians.
 ```{r}
 median(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
 
 median(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
 ```
+
 Here, interestingly, the medians are equal. Let's see what the means tell us.
 ```{r}
 mean(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
 
 mean(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
 ```
+
 So it seems that the defaulted loans has a longer tail than the completed lonas, and therefore the mean number of open credit lines is further away from the median than for the completed loans. Now let's look at the verified income.
 ```{r}
 ggplot(aes(x = IncomeVerifiable), data = defaults) +
@@ -172,6 +186,7 @@ ggplot(aes(x = IncomeVerifiable), data = defaults) +
 ggplot(aes(x = IncomeVerifiable), data = completed) +
   geom_bar()
 ```
+
 Interestingly, there doesn't seem to be too much of a difference between defaults and completed loans when it comes to whether or not they have verified income. Finally, we will look at bank card utilization, or, how much the borrower used their credit card.
 ```{r}
 ggplot(aes(x = BankcardUtilization), data = defaults) +
@@ -183,6 +198,7 @@ ggplot(aes(x = BankcardUtilization), data = completed) +
   geom_histogram(binwidth = 0.05) +
   scale_x_continuous(breaks = seq(0, 2, 0.1), limits = c(0, 2))
 ```
+
 We can see that for defaulted loans, they appear to use a higher percentage of their available bank card credit. Let's look at medians and means now.
 ```{r}
 mean(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)
@@ -193,6 +209,7 @@ median(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)
 
 median(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)
 ```
+
 So we can see that defaults have both a higher mean and median bank card utilization percentage than completed loans.
 
 Now we have a list of variables that may be useful in our model: the loan rating, the borrower's credit score, stated monthly income, debt-to-income ratio, open lines of credit, and bank card utilization percentage. Some variables that didn't appear as useful were: employment status and verifiable income.
@@ -209,6 +226,7 @@ wantedcols <- c('LoanStatus', 'Rating', 'CreditScoreAvg',
 mod_loans <- loans[wantedcols]
 
 ```
+
 Because the result of a loan is a binary choice, I am going to attempt to use logarithmic regression to create a model that will give the percent chance a loan will default. To do this I will first convert the loan rating into a numeric scale, one that mirrors Prosper's own numeric rankings.
 ```{r}
 mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
@@ -219,6 +237,7 @@ mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
                             ifelse(mod_loans$Rating == 'E', 2,
                             ifelse(mod_loans$Rating == 'HR',1,                                        0)))))))
 ```
+
 Since the alphabetical rankings are now redundant, I will drop that column. I will also create a subset that only has the defaulted and completed lonas.
 ```{r}
 mod_loans <- subset(mod_loans, select = -Rating)
@@ -226,12 +245,14 @@ mod_loans <- subset(mod_loans, select = -Rating)
 mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
                                 LoanStatus == 'Defaulted')
 ```
+
 Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed. Then I will drop the loan status column.
 ```{r}
 mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
 
 mod_results <- subset(mod_results, select = -LoanStatus)
 ```
+
 There are some NA values in the data. I will replace these with the mean or, for long-tailed data, the median.
 ```{r}
 mod_results$CreditScoreAvg[is.na(mod_results$CreditScoreAvg)] <- mean(mod_results$CreditScoreAvg, na.rm=TRUE)
@@ -246,10 +267,12 @@ mod_results$StatedMonthlyIncome[is.na(mod_results$StatedMonthlyIncome)] <- media
 
 mod_results$BorrowerAPR[is.na(mod_results$BorrowerAPR)] <- mean(mod_results$BorrowerAPR, na.rm=TRUE)
 ```
+
 Finally, I will drop any rows that have an NA value for the numeric rating. This is because this is essentially a categorical variable, and taking the mean or median doesn't make sense.
 ```{r}
 mod_results <- mod_results[complete.cases(mod_results[ , 7]),]
 ```
+
 The next step is to split our data into testing and training subsets. I want an 80/20 train/test split.
 ```{r}
 splits <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
@@ -265,6 +288,7 @@ model <- glm(result~., family=binomial(link='logit'), data = train)
 
 summary(model)
 ```
+
 Now we have our model. From the looks of it, the only variable that appears not significant is Bank Card Utilization. To see how well our model actually does, let us run it on the test data. I am using a 0.5 decision boundry. That is, if the model predicts a 50% probability of success (completed loan), it will be set to that.
 ```{r}
 test.results <- predict(model, 
@@ -278,6 +302,7 @@ accuracy.error <- mean(test.results != test$result)
 
 print(paste('Accuracy', 1-accuracy.error))
 ```
+
 Now let's analyze our result a bit more. I will calculate both its precision and its recall for defaults. That is, how good is our model at predicting defaults?
 ```{r}
 precision <- sum(test.results == test$result
@@ -289,6 +314,7 @@ recall <- sum(test.results == test$result
 print(paste('Precision', precision))
 print(paste('Recall', recall))
 ```
+
 From the above we can see two things. First, that 60% of cases where our model predicts a default, a default actually occured. Second, of the total defaults, our model only predicted just over 1% of them. It clearly needs some tweaking.
 
 ## Tweaking the Model
@@ -317,6 +343,7 @@ accuracy.error2 <- mean(test.results2 != test$result)
 
 print(paste('Accuracy (new model)', 1-accuracy.error))
 ```
+
 The accuracy is very similar to the previous model. Let us look at precision and recall again.
 ```{r}
 precision2 <- sum(test.results2 == test$result
@@ -328,6 +355,7 @@ recall2 <- sum(test.results2 == test$result
 print(paste('Precision (new model)', precision2))
 print(paste('Recall (new model)', recall2))
 ```
+
 Now we have captured a lot more of the defaults. Of the total defaults, our model predicted default 24% of the time. Additionally, 40% of the defaults it predicted were in fact defaults. Let's test one final thing. We will create a model based soley off the credit score and the rating given to the loan.
 ```{r}
 model3 <- glm(result~., family=binomial(link='logit'), data = subset(train, select = c(1, 6, 7)))
@@ -344,6 +372,7 @@ accuracy.error3 <- mean(test.results3 != test$result)
 
 print(paste('Accuracy (new model)', 1-accuracy.error3))
 ```
+
 Our new model is slightly less accurate, but let's check the precision and recall.
 ```{r}
 precision3 <- sum(test.results3 == test$result
@@ -355,6 +384,7 @@ recall3 <- sum(test.results3 == test$result
 print(paste('Precision (new model)', precision3))
 print(paste('Recall (new model)', recall3))
 ```
+
 We lost a little recall with out simplified model, but not much. Finally, let us set the decision boundry to 70%.
 ```{r}
 test.results4 <- predict(model3, 
@@ -376,6 +406,7 @@ recall4 <- sum(test.results4 == test$result
 print(paste('Precision (new model)', precision4))
 print(paste('Recall (new model)', recall4))
 ```
+
 With this decision boundry, we have created a model with decent precision but low accuracy. 45% of the time it predicts a default, one occurs, and it captures 16% of the total defaults. It is not a great model, but could be a useful tool, when used alongside other metrics, to determine the quality of a loan.
 
 ## Wrapping Up (Final Plots and Summary)
@@ -386,6 +417,7 @@ ggplot(aes(y = CreditScoreAvg, x = Rating), data = loans) +
   geom_jitter(alpha = 1/100) +
   labs(title = 'Scatterplot of Loan Rating vs. Avg. Credit Score')
 ```
+
 We see here that, as expected, the average credit score decreases as the loan rating decreases.
 ```{r}
 ggplot(aes(x = StatedMonthlyIncome, y = CreditScoreAvg), data = loans) +
@@ -394,6 +426,7 @@ ggplot(aes(x = StatedMonthlyIncome, y = CreditScoreAvg), data = loans) +
   labs(title = 'Scatterplot of Monthly Income vs Avg. Credit Score') +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 ```
+
 We see again that as income goes up, so too does average credit score, and subsequently loan rating.
 ```{r}
 ggplot(aes(x = DebtToIncomeRatio, y = CreditScoreAvg), data = loans) +
@@ -402,6 +435,7 @@ ggplot(aes(x = DebtToIncomeRatio, y = CreditScoreAvg), data = loans) +
   labs(title = 'Scatterplot of Debt-to-Income Ratio vs. Avg. Credit Score') +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 ```
+
 Here we see something interesting. As debt-to-income ratio goes up, credit score seems to approach an middle value. Additionally, the loan ratings all seem to be on the lower end, an expected outcome.
 ```{r}
 ggplot(aes(x = BorrowerAPR, y = CreditScoreAvg), data = loans) +
@@ -409,6 +443,7 @@ ggplot(aes(x = BorrowerAPR, y = CreditScoreAvg), data = loans) +
   labs(title = 'Scatterplot of APR vs. Avg. Credit Score') +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 ```
+
 Here again, as APR goes up, the loan rating decreases (the idea being that higher interest is given to riskier loans).
 
 From these graphs it is clear that all these variables are very interrelated. In fact, one's credit score likely takes into account many of these variables. This is one reason the model is less than ideal: it is a very complicated problem to predict. Furthermore, the loan ratings are essentially the company attempting to estimate the risk of default. AA loans are the safest, and HR loans (or NC) are the riskiest. Using the data given, we were able to create a decent model, but because many of the variables influence each other, and defaults are not always caused by individual factors (i.e. national or global economic conditions, which wouldn't show up in this data), to model leaves some things to be desired.
