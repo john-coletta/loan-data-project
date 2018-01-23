@@ -272,8 +272,20 @@ test.results <- predict(model,
                         type = 'response')
 
 test.results <- ifelse(test.results > 0.5, 1.0, 0)
-
+#Calculate to accuracy of our model (how often it's prediction
+#matched the actual result)
 accuracy.error <- mean(test.results != test$result)
 
 print(paste('Accuracy', 1-accuracy.error))
+```
+Now let's analyze our result a bit more. I will calculate both its precision and its recall for defaults. That is, how good is our model at predicting defaults?
+```{r}
+precision <- sum(test.results == test$result
+                 & test$result == 0)/sum(test.results == 0)
+
+recall <- sum(test.results == test$result
+              & test$result == 0)/sum(test$result == 0)
+
+print(paste('Precision', precision))
+print(paste('Recall', recall))
 ```
