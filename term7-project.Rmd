@@ -315,7 +315,7 @@ print(paste('Precision', precision))
 print(paste('Recall', recall))
 ```
 
-From the above we can see two things. First, that 60% of cases where our model predicts a default, a default actually occured. Second, of the total defaults, our model only predicted just over 1% of them. It clearly needs some tweaking.
+From the above we can see two things. First, that 60% or so of cases where our model predicts a default, a default actually occured. Second, of the total defaults, our model only predicted low-single-digit percents of them. It clearly needs some tweaking.
 
 ## Tweaking the Model
 
@@ -323,34 +323,34 @@ First I am going to remove Bank Card Utilization from the model, as it has a ver
 ```{r}
 mod_results <- subset(mod_results, select = -BankcardUtilization)
 
-splits <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
+splits2 <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
 
-test <- mod_results[splits,]
+test2 <- mod_results[splits2,]
 
-train <- mod_results[-splits,]
+train2 <- mod_results[-splits2,]
 
-model2 <- glm(result~., family=binomial(link='logit'), data = train)
+model2 <- glm(result~., family=binomial(link='logit'), data = train2)
 
 summary(model2)
 
 test.results2 <- predict(model2, 
-                        newdata=subset(test, select = c(1:6)),
+                        newdata=subset(test2, select = c(1:6)),
                         type = 'response')
 
-test.results <- ifelse(test.results2 > 0.75, 1.0, 0)
+test.results2 <- ifelse(test.results2 > 0.75, 1.0, 0)
 
-accuracy.error2 <- mean(test.results2 != test$result)
+accuracy.error2 <- mean(test.results2 != test2$result)
 
 print(paste('Accuracy (new model)', 1-accuracy.error))
 ```
 
 The accuracy is very similar to the previous model. Let us look at precision and recall again.
 ```{r}
-precision2 <- sum(test.results2 == test$result
-                 & test$result == 0)/sum(test.results2 == 0)
+precision2 <- sum(test.results2 == test2$result
+                 & test2$result == 0)/sum(test.results2 == 0)
 
-recall2 <- sum(test.results2 == test$result
-              & test$result == 0)/sum(test$result == 0)
+recall2 <- sum(test.results2 == test2$result
+              & test2$result == 0)/sum(test2$result == 0)
 
 print(paste('Precision (new model)', precision2))
 print(paste('Recall (new model)', recall2))
@@ -358,28 +358,28 @@ print(paste('Recall (new model)', recall2))
 
 Now we have captured a lot more of the defaults. Of the total defaults, our model predicted default 24% of the time. Additionally, 40% of the defaults it predicted were in fact defaults. Let's test one final thing. We will create a model based soley off the credit score and the rating given to the loan.
 ```{r}
-model3 <- glm(result~., family=binomial(link='logit'), data = subset(train, select = c(1, 6, 7)))
+model3 <- glm(result~., family=binomial(link='logit'), data = subset(train2, select = c(1, 6, 7)))
 
 summary(model3)
 
 test.results3 <- predict(model3, 
-                        newdata=subset(test, select = c(1, 6)),
+                        newdata=subset(test2, select = c(1, 6)),
                         type = 'response')
 
 test.results3 <- ifelse(test.results3 > 0.75, 1.0, 0)
 
-accuracy.error3 <- mean(test.results3 != test$result)
+accuracy.error3 <- mean(test.results3 != test2$result)
 
 print(paste('Accuracy (new model)', 1-accuracy.error3))
 ```
 
 Our new model is slightly less accurate, but let's check the precision and recall.
 ```{r}
-precision3 <- sum(test.results3 == test$result
-                 & test$result == 0)/sum(test.results3 == 0)
+precision3 <- sum(test.results3 == test2$result
+                 & test2$result == 0)/sum(test.results3 == 0)
 
-recall3 <- sum(test.results3 == test$result
-              & test$result == 0)/sum(test$result == 0)
+recall3 <- sum(test.results3 == test2$result
+              & test2$result == 0)/sum(test2$result == 0)
 
 print(paste('Precision (new model)', precision3))
 print(paste('Recall (new model)', recall3))
@@ -388,20 +388,20 @@ print(paste('Recall (new model)', recall3))
 We lost a little recall with out simplified model, but not much. Finally, let us set the decision boundry to 70%.
 ```{r}
 test.results4 <- predict(model3, 
-                        newdata=subset(test, select = c(1, 6)),
+                        newdata=subset(test2, select = c(1, 6)),
                         type = 'response')
 
 test.results4 <- ifelse(test.results4 > 0.7, 1.0, 0)
 
-accuracy.error4 <- mean(test.results4 != test$result)
+accuracy.error4 <- mean(test.results4 != test2$result)
 
 print(paste('Accuracy (new model)', 1-accuracy.error4))
 
-precision4 <- sum(test.results4 == test$result
-                 & test$result == 0)/sum(test.results4 == 0)
+precision4 <- sum(test.results4 == test2$result
+                 & test2$result == 0)/sum(test.results4 == 0)
 
-recall4 <- sum(test.results4 == test$result
-              & test$result == 0)/sum(test$result == 0)
+recall4 <- sum(test.results4 == test2$result
+              & test2$result == 0)/sum(test2$result == 0)
 
 print(paste('Precision (new model)', precision4))
 print(paste('Recall (new model)', recall4))
