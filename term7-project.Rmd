@@ -417,3 +417,4 @@ Despite this, it could be a useful preliminary tool in analyzing a loan. You can
 
 ## Reflection
 
+Getting more complete data, which I mentioned previously, would be a huge boon to this investigation. A major problem I encountered was that so many of the loans were ongoing. If I had a longer time span of loans, including many more defaults and completed ones, I am confident my model would be more predictive. As it is, EDA was extremely useful in identifying which variables would be interesting, and in seeing how they interacted with each other and with the result of the loan.
