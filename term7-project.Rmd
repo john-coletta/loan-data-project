@@ -387,5 +387,8 @@ ggplot(aes(y = CreditScoreAvg, x = Rating), data = loans) +
 ```
 We see here that, as expected, the average credit score decreases as the loan rating decreases.
 ```{r}
-
+ggplot(aes(x = StatedMonthlyIncome, y = CreditScoreAvg), data = loans) +
+  geom_point(aes(color = Rating), alpha = 1/2) +
+  scale_x_continuous(limits = c(0, 50000))
 ```
+We see again that as income goes up, so too does average credit score, and subsequently loan rating.
