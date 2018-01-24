@@ -222,7 +222,7 @@ Now we have a list of variables that may be useful in our model: the loan rating
 ## Analysis
 
 I am going to create new data sets that contain only the variables I care about, so that they are easier to work with.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 wantedcols <- c('LoanStatus', 'Rating', 'CreditScoreAvg',
                 'OpenCreditLines', 'BankcardUtilization',
                 'DebtToIncomeRatio', 'StatedMonthlyIncome',
@@ -233,7 +233,7 @@ mod_loans <- loans[wantedcols]
 ```
 
 Because the result of a loan is a binary choice, I am going to attempt to use logarithmic regression to create a model that will give the percent chance a loan will default. To do this I will first convert the loan rating into a numeric scale, one that mirrors Prosper's own numeric rankings.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
                             ifelse(mod_loans$Rating == 'A', 6,
                             ifelse(mod_loans$Rating == 'B', 5,
@@ -244,7 +244,7 @@ mod_loans$rating.numeric <- ifelse(mod_loans$Rating == 'AA', 7,
 ```
 
 Since the alphabetical rankings are now redundant, I will drop that column. I will also create a subset that only has the defaulted and completed lonas.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 mod_loans <- subset(mod_loans, select = -Rating)
 
 mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
@@ -252,14 +252,14 @@ mod_results <- subset(mod_loans, LoanStatus == 'Completed' |
 ```
 
 Now I will create a new column that is 0 if the loan is defaulted and 1 if it is completed. Then I will drop the loan status column.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 mod_results$result <- ifelse(mod_results$LoanStatus == 'Completed', 1, 0)
 
 mod_results <- subset(mod_results, select = -LoanStatus)
 ```
 
 There are some NA values in the data. I will replace these with the mean or, for long-tailed data, the median.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 mod_results$CreditScoreAvg[is.na(mod_results$CreditScoreAvg)] <- mean(mod_results$CreditScoreAvg, na.rm=TRUE)
 
 mod_results$OpenCreditLines[is.na(mod_results$OpenCreditLines)] <- mean(mod_results$OpenCreditLines, na.rm=TRUE)
@@ -274,7 +274,7 @@ mod_results$BorrowerAPR[is.na(mod_results$BorrowerAPR)] <- mean(mod_results$Borr
 ```
 
 Finally, I will drop any rows that have an NA value for the numeric rating. This is because this is essentially a categorical variable, and taking the mean or median doesn't make sense.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 mod_results <- mod_results[complete.cases(mod_results[ , 7]),]
 ```
 
@@ -325,7 +325,7 @@ From the above we can see two things. First, that 60% or so of cases where our m
 ## Tweaking the Model
 
 First I am going to remove Bank Card Utilization from the model, as it has a very high p-value. Then I am going to tweak our decision threshold. Currently it sits at 50%, but if there is a 50/50 chance of a loan defaulting, would a bank want to give out that loan? Probably not. I will therefore increase it to a 75% threshold.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 mod_results <- subset(mod_results, select = -BankcardUtilization)
 
 splits2 <- sample(1:nrow(mod_results), size = 0.2*nrow(mod_results))
@@ -346,23 +346,23 @@ test.results2 <- ifelse(test.results2 > 0.75, 1.0, 0)
 
 accuracy.error2 <- mean(test.results2 != test2$result)
 
-print(paste('Accuracy (new model)', 1-accuracy.error))
+print(paste('Accuracy (model 2)', 1-accuracy.error))
 ```
 
 The accuracy is very similar to the previous model. Let us look at precision and recall again.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 precision2 <- sum(test.results2 == test2$result
                  & test2$result == 0)/sum(test.results2 == 0)
 
 recall2 <- sum(test.results2 == test2$result
               & test2$result == 0)/sum(test2$result == 0)
 
-print(paste('Precision (new model)', precision2))
-print(paste('Recall (new model)', recall2))
+print(paste('Precision (model 2)', precision2))
+print(paste('Recall (model 2)', recall2))
 ```
 
 Now we have captured a lot more of the defaults. Of the total defaults, our model predicted default 25ish% of the time. Additionally, 40% of the defaults it predicted were in fact defaults. Let's test one final thing. We will create a model based soley off the credit score and the rating given to the loan.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 model3 <- glm(result~., family=binomial(link='logit'), data = subset(train2, select = c(1, 6, 7)))
 
 summary(model3)
@@ -375,23 +375,23 @@ test.results3 <- ifelse(test.results3 > 0.75, 1.0, 0)
 
 accuracy.error3 <- mean(test.results3 != test2$result)
 
-print(paste('Accuracy (new model)', 1-accuracy.error3))
+print(paste('Accuracy (model 3)', 1-accuracy.error3))
 ```
 
 Our new model is slightly less accurate, but let's check the precision and recall.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 precision3 <- sum(test.results3 == test2$result
                  & test2$result == 0)/sum(test.results3 == 0)
 
 recall3 <- sum(test.results3 == test2$result
               & test2$result == 0)/sum(test2$result == 0)
 
-print(paste('Precision (new model)', precision3))
-print(paste('Recall (new model)', recall3))
+print(paste('Precision (model 3)', precision3))
+print(paste('Recall (model 3)', recall3))
 ```
 
 We lost a little recall with out simplified model, but not much. Finally, let us set the decision boundry to 70%.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 test.results4 <- predict(model3, 
                         newdata=subset(test2, select = c(1, 6)),
                         type = 'response')
@@ -400,7 +400,7 @@ test.results4 <- ifelse(test.results4 > 0.7, 1.0, 0)
 
 accuracy.error4 <- mean(test.results4 != test2$result)
 
-print(paste('Accuracy (new model)', 1-accuracy.error4))
+print(paste('Accuracy (model 4)', 1-accuracy.error4))
 
 precision4 <- sum(test.results4 == test2$result
                  & test2$result == 0)/sum(test.results4 == 0)
@@ -408,8 +408,8 @@ precision4 <- sum(test.results4 == test2$result
 recall4 <- sum(test.results4 == test2$result
               & test2$result == 0)/sum(test2$result == 0)
 
-print(paste('Precision (new model)', precision4))
-print(paste('Recall (new model)', recall4))
+print(paste('Precision (model 4)', precision4))
+print(paste('Recall (model 4)', recall4))
 ```
 
 With this decision boundry, we have created a model with decent precision but low accuracy. 47ish% of the time it predicts a default, one occurs, and it captures 17% of the total defaults. It is not a great model, but could be a useful tool, when used alongside other metrics, to determine the quality of a loan.
@@ -417,36 +417,39 @@ With this decision boundry, we have created a model with decent precision but lo
 ## Wrapping Up (Final Plots and Summary)
 
 To wrap up I will examine the relationship between a couple of the variables, to help explore why the model was not excellent. First I will look at the relationship between credit score and loan rating, and then between monthly income, APR, debt to income ration, and loan rating.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(y = CreditScoreAvg, x = Rating), data = loans) +
   geom_jitter(alpha = 1/100) +
   labs(title = 'Scatterplot of Loan Rating vs. Avg. Credit Score')
 ```
 
 We see here that, as expected, the average credit score decreases as the loan rating decreases.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome, y = CreditScoreAvg), data = loans) +
   geom_point(aes(color = Rating), alpha = 1/2) +
   scale_x_continuous(limits = c(0, 50000)) +
   labs(title = 'Scatterplot of Monthly Income vs Avg. Credit Score') +
-  guides(color = guide_legend(override.aes = list(alpha = 1)))
+  scale_color_brewer(type = 'seq',
+                     guide = guide_legend(override.aes = list(alpha = 1)))
 ```
 
 We see again that as income goes up, so too does average credit score, and subsequently loan rating.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = DebtToIncomeRatio, y = CreditScoreAvg), data = loans) +
   geom_point(aes(color = Rating), alpha = 1/2) +
   scale_x_continuous(limits = c(0,1)) +
   labs(title = 'Scatterplot of Debt-to-Income Ratio vs. Avg. Credit Score') +
-  guides(color = guide_legend(override.aes = list(alpha = 1)))
+  scale_color_brewer(type = 'seq',
+                     guide = guide_legend(override.aes = list(alpha = 1)))
 ```
 
 Here we see something interesting. As debt-to-income ratio goes up, credit score seems to approach an middle value. Additionally, the loan ratings all seem to be on the lower end, an expected outcome.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = BorrowerAPR, y = CreditScoreAvg), data = loans) +
   geom_point(aes(color = Rating), alpha = 1/2) +
   labs(title = 'Scatterplot of APR vs. Avg. Credit Score') +
-  guides(color = guide_legend(override.aes = list(alpha = 1)))
+  scale_color_brewer(type = 'seq',
+                     guide = guide_legend(override.aes = list(alpha = 1)))
 ```
 
 Here again, as APR goes up, the loan rating decreases (the idea being that higher interest is given to riskier loans).
