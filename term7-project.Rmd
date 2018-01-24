@@ -95,38 +95,40 @@ So we can see from above that the defaults have a lower mean credit score than t
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome), data = defaults) +
   geom_histogram() +
-  scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000))
+  scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome), data = completed) +
   geom_histogram() +
-  scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000))
+  scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 Because these are both very long-tailed distributions, let's look at the median.
-```{r}
-median(subset(defaults, !is.na(StatedMonthlyIncome))$StatedMonthlyIncome)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print(paste('Median Income for Defaults',median(subset(defaults, !is.na(StatedMonthlyIncome))$StatedMonthlyIncome)))
 
-median(subset(completed, !is.na(StatedMonthlyIncome))$StatedMonthlyIncome)
+print(paste('Median Income for Completed Loans',median(subset(completed, !is.na(StatedMonthlyIncome))$StatedMonthlyIncome)))
 ```
 
 Again, we see that the median monthly income for the completed loans is higher than that of the defaults. Soon we can start building a model to try and predict the probability a loan will default. Next let us look at debt to income ratio.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = DebtToIncomeRatio), data = defaults) +
   geom_histogram() +
   scale_x_continuous(breaks = seq(0, 1, .1), limits = c(0, 1))
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = DebtToIncomeRatio), data = completed) +
   geom_histogram() +
   scale_x_continuous(breaks = seq(0, 1, .1), limits = c(0, 1))
 ```
 
 Again, since they are long-tailed, let's look at the median.
-```{r}
-median(subset(defaults, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print(paste('Defaults:',median(subset(defaults, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)))
 
-median(subset(completed, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)
+print(paste('Completed Loans:',median(subset(completed, !is.na(DebtToIncomeRatio))$DebtToIncomeRatio)))
 ```
 
 We can see that, once again, the completed loans have a lower debt-to-income ratio than the defaulted loans, this too makes sense.
@@ -136,79 +138,81 @@ We can see that, once again, the completed loans have a lower debt-to-income rat
 We have found a few interesting things that can help our model. First, defaulted loans tend to have lower ratings than completed loans. Second, the employment status of the borrower doesn't seem to matter as much, though defaulted loans had higher instances of 'not available'. Third, the mean credit scores and median monthly income of defaulted loans is less than completed loans. Finally, the median debt-to-income ratio is higher for defaulted loans.
 
 We are going to look at a few more variables. First, the APR of the loan. Second, the number of open credit lines. Third, whether or not the borrower provided verifiable documentation of income. And fourth, the bank card utilization of the borrower.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = BorrowerAPR), data = defaults) +
   geom_histogram(binwidth = .01) +
   scale_x_continuous(breaks = seq(0, .5, .05))
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = BorrowerAPR), data = completed) +
   geom_histogram(binwidth = .01) +
   scale_x_continuous(breaks = seq(0, .5, .05))
 ```
 
 Let's take a look at the median now.
-```{r}
-median(subset(defaults, !is.na(BorrowerAPR))$BorrowerAPR)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print(paste('Defaults:',median(subset(defaults, !is.na(BorrowerAPR))$BorrowerAPR)))
 
-median(subset(completed, !is.na(BorrowerAPR))$BorrowerAPR)
+print(paste('Complted Loans:',median(subset(completed, !is.na(BorrowerAPR))$BorrowerAPR)))
 ```
 
 We see here that the defaulted loans tend to have a higher APR than the completed loans. Let's look through the other variables.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = OpenCreditLines), data = defaults) +
   geom_histogram(binwidth = 1)
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = OpenCreditLines), data = completed) +
   geom_histogram(binwidth = 1)
 ```
 
 And again, the medians.
-```{r}
-median(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print(paste('Defaults:',median(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)))
 
-median(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
+print(paste('Completed Loans:',median(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)))
 ```
 
 Here, interestingly, the medians are equal. Let's see what the means tell us.
-```{r}
-mean(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print(paste('Defaults:',mean(subset(defaults, !is.na(OpenCreditLines))$OpenCreditLines)))
 
-mean(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)
+print(paste('Completed Loans:',mean(subset(completed, !is.na(OpenCreditLines))$OpenCreditLines)))
 ```
 
 So it seems that the defaulted loans has a longer tail than the completed lonas, and therefore the mean number of open credit lines is further away from the median than for the completed loans. Now let's look at the verified income.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = IncomeVerifiable), data = defaults) +
   geom_bar()
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = IncomeVerifiable), data = completed) +
   geom_bar()
 ```
 
 Interestingly, there doesn't seem to be too much of a difference between defaults and completed loans when it comes to whether or not they have verified income. Finally, we will look at bank card utilization, or, how much the borrower used their credit card.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = BankcardUtilization), data = defaults) +
   geom_histogram(binwidth = 0.05) +
   scale_x_continuous(breaks = seq(0, 2, 0.1), limits = c(0, 2))
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = BankcardUtilization), data = completed) +
   geom_histogram(binwidth = 0.05) +
   scale_x_continuous(breaks = seq(0, 2, 0.1), limits = c(0, 2))
 ```
 
 We can see that for defaulted loans, they appear to use a higher percentage of their available bank card credit. Let's look at medians and means now.
-```{r}
-mean(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print('Means')
+print(paste('Defaults:',mean(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)))
 
-mean(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)
+print(paste('Completed Loans:',mean(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)))
 
-median(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)
+print('Medians')
+print(paste('Defaults:',median(subset(defaults, !is.na(BankcardUtilization))$BankcardUtilization)))
 
-median(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)
+print(paste('Completed Loans:',median(subset(completed, !is.na(BankcardUtilization))$BankcardUtilization)))
 ```
 
 So we can see that defaults have both a higher mean and median bank card utilization percentage than completed loans.
