@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 #Load in the data
@@ -15,7 +15,7 @@ library(dplyr)
 ```
 ## Exploring the data
 
-Here we will explore the data and choose some variables to examine in further depth.
+Here we will explore the data and choose some variables to examine in further depth. The variables:
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 colnames(loans)
 
@@ -41,12 +41,12 @@ loans$Rating = factor(loans$Rating,
                       c('AA', 'A', 'B', 'C', 'D', 'E', 'HR', 'NC'))
 ```
 
-Now lets subset our data.
+Now lets subset our data and take a look at some of the resulting plots.
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 defaults <- subset(loans, LoanStatus == 'Defaulted')
 completed <- subset(loans, LoanStatus == 'Completed')
 ```
-Now let's look at some of the plots.
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = Rating), data = defaults) +
   geom_bar()
@@ -92,6 +92,7 @@ print(paste('Mean Credit Score for Completed Loans',mean(subset(completed, !is.n
 ```
 
 So we can see from above that the defaults have a lower mean credit score than the completed, which is what we would expect. Now let's look at monthly income.
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome), data = defaults) +
   geom_histogram() +
