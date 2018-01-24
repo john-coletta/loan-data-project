@@ -4,9 +4,9 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 #Load in the data
 loans <- read.csv('prosperLoanData.csv', na.strings = '')
 library(ggplot2)
@@ -16,7 +16,7 @@ library(dplyr)
 ## Exploring the data
 
 Here we will explore the data and choose some variables to examine in further depth.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 colnames(loans)
 
 table(loans$LoanStatus)
@@ -32,7 +32,7 @@ I feel that the most interesting investigation into this data would be attemptin
 The first things I am going to look at are credit grade and employment status. I expect that loans that default will have a lower credit grade and/or a more precarious employment status.
 
 By reading the documentation it is clear that loans post-January 2009 have a Prosper Rating while those before have a credit grade. Therefore I am going to combine them into one varable called 'Rating'.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 loans$Rating <- ifelse(is.na(loans$CreditGrade),
                        as.character(loans$ProsperRating..Alpha.),
                        as.character(loans$CreditGrade))
@@ -42,35 +42,36 @@ loans$Rating = factor(loans$Rating,
 ```
 
 Now lets subset our data.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 defaults <- subset(loans, LoanStatus == 'Defaulted')
 completed <- subset(loans, LoanStatus == 'Completed')
 ```
-
-Now let's look.
-```{r}
+Now let's look at some of the plots.
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = Rating), data = defaults) +
   geom_bar()
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = Rating), data = completed) +
   geom_bar()
 
 ```
 
 We notice something interesting from these graphs. As expected, the defaulted loans have ratings toward the lower end. However, the completed loans don't seem to favor one rating vs. another. Now let's look at employment status.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = EmploymentStatus), data = defaults) +
-  geom_bar()
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = EmploymentStatus), data = completed) +
-  geom_bar()
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 We can see from the above that there isn't too much a difference in employment status, though the defaults seem to have more 'not available' than the completed. Now let's look at some quantitative variables, namely, credit score of the borrower. We will first average the upper and lower credit scores.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 #Don't forget to add this to the subsets too
 loans$CreditScoreAvg <- (loans$CreditScoreRangeLower + loans$CreditScoreRangeUpper) / 2
 
@@ -80,23 +81,23 @@ completed <- subset(loans, LoanStatus == 'Completed')
 ggplot(aes(x = CreditScoreAvg), data = defaults) +
   geom_histogram(binwidth = 19)
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = CreditScoreAvg), data = completed) +
   geom_histogram(binwidth = 19)
 ```
-```{r}
-mean(subset(defaults, !is.na(CreditScoreAvg))$CreditScoreAvg)
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+print(paste('Mean Credit Score for Defaults',mean(subset(defaults, !is.na(CreditScoreAvg))$CreditScoreAvg)))
 
-mean(subset(completed, !is.na(CreditScoreAvg))$CreditScoreAvg)
+print(paste('Mean Credit Score for Completed Loans',mean(subset(completed, !is.na(CreditScoreAvg))$CreditScoreAvg)))
 ```
 
 So we can see from above that the defaults have a lower mean credit score than the completed, which is what we would expect. Now let's look at monthly income.
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome), data = defaults) +
   geom_histogram() +
   scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000))
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome), data = completed) +
   geom_histogram() +
   scale_x_continuous(breaks = seq(0, 20000, 1000), limits = c(0, 20000))
