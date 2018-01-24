@@ -271,7 +271,7 @@ ggplot(aes(x = BorrowerAPR, y = CreditScoreAvg), data = loans) +
   scale_color_brewer(type = 'seq',
                      guide = guide_legend(override.aes = list(alpha = 1)))
 ```
-```{r}
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = LoanOriginalAmount, y = CreditScoreAvg), data = loans) +
   geom_point(aes(color = StatedMonthlyIncome.bucket), alpha = 1/2) +
   scale_color_brewer(type = 'seq', 
@@ -478,6 +478,7 @@ With this decision boundry, we have created a model with decent precision but lo
 ## Wrapping Up (Final Plots and Summary)
 
 To wrap up I will examine the relationship between a couple of the variables from the previous section with multivarite plots. First up is the plot of rating vs average credit score
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = Rating, y = CreditScoreAvg), data = loans) +
   geom_jitter(alpha = 1/100) +
