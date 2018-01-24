@@ -278,7 +278,7 @@ ggplot(aes(x = LoanOriginalAmount, y = CreditScoreAvg), data = loans) +
                      guide = guide_legend(override.aes = list(alpha = 1)))
 ```
 
-This does not show much of a pattern, though it does show that higher value loans are correlated with higher credit scores.
+This does not show much of a pattern, though it does show that higher value loans are correlated with higher credit scores. Now onto the model.
 
 ## Analysis
 
@@ -477,7 +477,7 @@ With this decision boundry, we have created a model with decent precision but lo
 
 ## Wrapping Up (Final Plots and Summary)
 
-To wrap up I will examine the relationship between a couple of the variables, to help explore why the model was not excellent. First I will look at the relationship between credit score and loan rating, and then between monthly income, APR, debt to income ration, and loan rating.
+To wrap up I will examine the relationship between a couple of the variables from the previous section with multivarite plots. First up is the plot of rating vs average credit score
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = Rating, y = CreditScoreAvg), data = loans) +
   geom_jitter(alpha = 1/100) +
@@ -493,7 +493,8 @@ ggplot(aes(x = Rating, y = CreditScoreAvg), data = loans) +
   ylab('Avg. Credit Score')
 ```
 
-We see here that, as expected, the average credit score decreases as the loan rating decreases.
+We see here that, as expected, the average credit score decreases as the loan rating decreases. Next up is the scatterplot of monthly income vs average credit score.
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = StatedMonthlyIncome, y = CreditScoreAvg), data = loans) +
   geom_point(aes(color = Rating), alpha = 1/2) +
@@ -505,17 +506,18 @@ ggplot(aes(x = StatedMonthlyIncome, y = CreditScoreAvg), data = loans) +
                      guide = guide_legend(override.aes = list(alpha = 1)))
 ```
 
-We see again that as income goes up, so too does average credit score, and subsequently loan rating.
+We see again that as income goes up, so too does average credit score, and subsequently loan rating. Finally we have the histogram of APR, with the loan rating as the color.
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ggplot(aes(x = BorrowerAPR), data = loans) +
-  geom_histogram(aes(fill = Rating))
+  geom_histogram(aes(fill = Rating)) +
+  labs(title = 'Histogram of Borrower APR') +
+  xlab('Borrower APR') +
+  ylab('Count')
 
 ```
 
-Here we see something interesting. As debt-to-income ratio goes up, credit score seems to approach an middle value. Additionally, the loan ratings all seem to be on the lower end, an expected outcome.
-
-
-Here again, as APR goes up, the loan rating decreases (the idea being that higher interest is given to riskier loans).
+Here we see that as APR increases the loan rating degrades.
 
 From these graphs it is clear that all these variables are very interrelated. In fact, one's credit score likely takes into account many of these variables. This is one reason the model is less than ideal: it is a very complicated problem to predict. Furthermore, the loan ratings are essentially the company attempting to estimate the risk of default. AA loans are the safest, and HR loans (or NC) are the riskiest. Using the data given, we were able to create a decent model, but because many of the variables influence each other, and defaults are not always caused by individual factors (i.e. national or global economic conditions, which wouldn't show up in this data), to model leaves some things to be desired.
 
